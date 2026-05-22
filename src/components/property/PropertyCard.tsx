@@ -26,6 +26,12 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 Available
               </span>
             )}
+            {property.verified && (
+              <span className="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full flex items-center gap-1">
+                <Icon name="ShieldCheckIcon" size={14} />
+                Verified Property
+              </span>
+            )}
             <span className="px-3 py-1 bg-card/90 backdrop-blur-sm text-foreground text-xs font-bold rounded-full">
               {property.type}
             </span>

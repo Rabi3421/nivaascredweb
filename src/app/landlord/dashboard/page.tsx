@@ -137,6 +137,7 @@ export default function LandlordDashboardPage() {
           actions={[
             { label: "Add Property", href: "/landlord/property-management/add", icon: "PlusIcon", variant: "primary" },
             { label: "View Applications", href: "/landlord/tenant-requests", icon: "UserGroupIcon", variant: "outline" },
+            { label: "Verification", href: "/landlord/verification", icon: "ShieldCheckIcon", variant: "outline" },
           ]}
         />
 
@@ -218,9 +219,12 @@ export default function LandlordDashboardPage() {
                           {application.status}
                         </div>
 
-                        {/* TODO: Link to GET /api/users/:tenantId/profile */}
-                        <button className="px-3 py-1 bg-primary text-white rounded-lg text-xs font-medium hover:bg-secondary transition-colors">
-                          View Profile
+                        <button
+                          disabled
+                          title="Public tenant profile pages are outside the MVP scope."
+                          className="px-3 py-1 bg-muted text-muted-foreground rounded-lg text-xs font-medium cursor-not-allowed"
+                        >
+                          Profile Soon
                         </button>
                       </div>
                     </div>
@@ -295,7 +299,7 @@ export default function LandlordDashboardPage() {
 
               <VerificationStatusWidget
                 verificationStatus={mockUser.verificationStatus}
-                actionHref="/landlord/profile?tab=verification"
+                actionHref="/landlord/verification"
                 actionLabel="Update Verification"
               />
 
@@ -321,11 +325,11 @@ export default function LandlordDashboardPage() {
                     <span className="text-foreground font-medium">Review Applications</span>
                   </Link>
                   <Link
-                    href="/landlord/profile"
+                    href="/landlord/verification"
                     className="w-full p-3 bg-muted/50 rounded-xl text-left hover:bg-muted transition-colors flex items-center space-x-3"
                   >
-                    <Icon name="UserIcon" size={20} className="text-muted-foreground" />
-                    <span className="text-foreground font-medium">Update Profile</span>
+                    <Icon name="ShieldCheckIcon" size={20} className="text-muted-foreground" />
+                    <span className="text-foreground font-medium">Verification</span>
                   </Link>
                 </div>
               </div>

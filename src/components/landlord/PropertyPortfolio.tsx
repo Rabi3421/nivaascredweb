@@ -182,7 +182,7 @@ export default function PropertyPortfolio() {
 
                   <div className="flex space-x-2">
                     <Link
-                      href={`/property-listings/${property._id}`}
+                      href={`/property-details/${property._id}`}
                       className="px-3 py-1 bg-primary text-white rounded-lg text-xs font-medium hover:bg-secondary transition-colors"
                     >
                       View

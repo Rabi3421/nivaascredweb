@@ -57,7 +57,7 @@ const ACTION_STYLES: Record<string, string> = {
 
 const ACTION_LABELS: Record<string, string> = {
   shortlisted: "Shortlist",
-  approved: "Accept",
+  approved: "Approve",
   rejected: "Reject",
 };
 
@@ -550,7 +550,7 @@ export default function LandlordTenantRequestsPage() {
               <div>
                 <h3 className="font-bold text-foreground">
                   {confirmAction.newStatus === "approved"
-                    ? "Accept Application"
+                    ? "Approve Application"
                     : confirmAction.newStatus === "rejected"
                     ? "Reject Application"
                     : "Shortlist Tenant"}

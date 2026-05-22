@@ -58,7 +58,7 @@ export default function Header() {
         { href: "/how-it-works", label: "Overview" },
         { href: "/safety-and-trust", label: "Safety & Trust" },
         { href: "/credit-score", label: "Credit Score" },
-        { href: "/about", label: "About RentTrust" },
+        { href: "/about", label: "About NivaasCred" },
       ],
     },
     {
@@ -66,7 +66,7 @@ export default function Header() {
       dropdown: [
         { href: "/tenant/dashboard", label: "For Tenants" },
         { href: "/landlord/dashboard", label: "For Landlords" },
-        { href: "/property-details/1", label: "Property Details" },
+        { href: "/property-listings", label: "Browse Properties" },
         { href: "/support", label: "Support" },
         { href: "/help-center", label: "Help Center" },
       ],

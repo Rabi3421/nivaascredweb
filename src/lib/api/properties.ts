@@ -50,6 +50,7 @@ export interface ApiProperty {
   noticePeriodDays?: number;
   availableFrom?: string;
   availabilityStatus: "available" | "rented" | "inactive" | "pending_review";
+  verificationStatus?: "unverified" | "pending" | "approved" | "rejected";
   averageRating: number;
   totalReviews: number;
   views: number;
@@ -109,6 +110,7 @@ export function toCardProperty(p: ApiProperty): Property {
     landlord: landlordCard,
     amenities: p.amenities ?? [],
     available: p.availabilityStatus === "available",
+    verified: p.verificationStatus === "approved",
   };
 }
 

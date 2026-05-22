@@ -116,6 +116,12 @@ export default async function PropertyDetailsPage({ params }: PageProps) {
                     <span className="px-3 py-1 bg-primary text-white text-sm font-bold rounded-full">
                       {property.propertyType}
                     </span>
+                    {property.verificationStatus === "approved" && (
+                      <span className="flex items-center space-x-1 px-3 py-1 bg-primary/10 text-primary text-sm font-bold rounded-full">
+                        <Icon name="ShieldCheckIcon" size={14} />
+                        <span>Verified Property</span>
+                      </span>
+                    )}
                     {landlord?.isEmailVerified && (
                       <span className="flex items-center space-x-1 px-3 py-1 bg-success/10 text-success text-sm font-bold rounded-full">
                         <Icon name="ShieldCheckIcon" size={14} />

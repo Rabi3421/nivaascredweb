@@ -22,6 +22,7 @@ export interface Property {
   landlord: PropertyLandlord;
   amenities: string[];
   available: boolean;
+  verified?: boolean;
 }
 
 export interface FilterValues {

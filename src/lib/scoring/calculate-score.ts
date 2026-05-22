@@ -84,7 +84,11 @@ async function verificationPoints(userId: Types.ObjectId, profileStatus?: object
   }, 0);
 
   const profilePoints = verificationPointsFromBooleans(profileStatus);
-  const points = Math.min(100, profilePoints + Math.min(30, docPoints));
+  const hasProfileVerification = profilePoints > 0;
+  const points =
+    docs.length === 0 && !hasProfileVerification
+      ? 25
+      : Math.min(100, profilePoints + Math.min(30, docPoints));
 
   return {
     points,
@@ -179,10 +183,11 @@ export async function calculateTenantScore(
   const completed = rentalMap.get("completed") ?? 0;
   const active = rentalMap.get("active") ?? 0;
   const terminated = rentalMap.get("terminated") ?? 0;
-  const rentalPoints = Math.max(
-    0,
-    Math.min(150, completed * 45 + active * 25 - terminated * 35)
-  );
+  const totalRentals = completed + active + terminated;
+  const rentalPoints =
+    totalRentals === 0
+      ? 75
+      : Math.max(0, Math.min(150, completed * 45 + active * 25 - terminated * 35));
   const rentalBreakdown = {
     points: rentalPoints,
     maxPoints: 150,
@@ -194,14 +199,20 @@ export async function calculateTenantScore(
   const applicationMap = new Map(applicationCounts.map((item) => [item._id, item.count]));
   const approved = applicationMap.get("approved") ?? 0;
   const rejected = applicationMap.get("rejected") ?? 0;
-  const applicationPoints = Math.max(0, Math.min(100, approved * 30 - rejected * 5));
+  const pending = applicationMap.get("pending") ?? 0;
+  const shortlisted = applicationMap.get("shortlisted") ?? 0;
+  const totalApplications = approved + rejected + pending + shortlisted;
+  const applicationPoints =
+    totalApplications === 0
+      ? 50
+      : Math.max(0, Math.min(100, approved * 30 - rejected * 5));
   const applicationBreakdown = {
     points: applicationPoints,
     maxPoints: 100,
     approved,
     rejected,
-    pending: applicationMap.get("pending") ?? 0,
-    shortlisted: applicationMap.get("shortlisted") ?? 0,
+    pending,
+    shortlisted,
   };
 
   const verificationBreakdown = await verificationPoints(
@@ -282,8 +293,12 @@ export async function calculateLandlordScore(
   const completed = rentalMap.get("completed") ?? 0;
   const active = rentalMap.get("active") ?? 0;
   const terminated = rentalMap.get("terminated") ?? 0;
+  const totalRentals = completed + active + terminated;
   const rentalBreakdown = {
-    points: Math.max(0, Math.min(150, completed * 40 + active * 25 - terminated * 20)),
+    points:
+      totalRentals === 0
+        ? 75
+        : Math.max(0, Math.min(150, completed * 40 + active * 25 - terminated * 20)),
     maxPoints: 150,
     completed,
     active,
@@ -296,7 +311,10 @@ export async function calculateLandlordScore(
     (propertyMap.get("available") ?? 0) + (propertyMap.get("rented") ?? 0);
   const profilePropertyBonus = profile?.verificationStatus?.property ? 25 : 0;
   const propertyBreakdown = {
-    points: Math.min(100, activePropertyCount * 20 + profilePropertyBonus),
+    points:
+      totalProperties === 0
+        ? 50
+        : Math.min(100, activePropertyCount * 20 + profilePropertyBonus),
     maxPoints: 100,
     totalProperties,
     activeProperties: activePropertyCount,

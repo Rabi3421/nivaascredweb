@@ -116,6 +116,7 @@ export default function TenantDashboardPage() {
           actions={[
             { label: "Find Home", href: "/tenant/find-home", icon: "MagnifyingGlassIcon", variant: "primary" },
             { label: "My Applications", href: "/tenant/applications", icon: "DocumentTextIcon", variant: "outline" },
+            { label: "Verification", href: "/tenant/verification", icon: "ShieldCheckIcon", variant: "outline" },
           ]}
         />
 
@@ -135,7 +136,7 @@ export default function TenantDashboardPage() {
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-foreground">Current Rental</h2>
                   {/* TODO: Link to GET /api/tenants/me/rental */}
-                  <Link href="/tenant/my-rentals" className="text-primary hover:underline text-sm">
+                  <Link href="/tenant/rental-history" className="text-primary hover:underline text-sm">
                     View Details
                   </Link>
                 </div>
@@ -187,16 +188,19 @@ export default function TenantDashboardPage() {
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-3">
-                      {/* TODO: POST /api/payments/initiate */}
-                      <Link
-                        href="/tenant/payments"
-                        className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-secondary transition-colors"
+                      <button
+                        disabled
+                        title="Rent payment collection is outside the MVP scope."
+                        className="px-4 py-2 bg-muted text-muted-foreground rounded-lg text-sm font-medium cursor-not-allowed"
                       >
-                        Pay Rent
-                      </Link>
-                      {/* TODO: POST /api/messages/new */}
-                      <button className="px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors">
-                        Contact Landlord
+                        Payments Coming Soon
+                      </button>
+                      <button
+                        disabled
+                        title="Chat is outside the MVP scope."
+                        className="px-4 py-2 border border-border rounded-lg text-sm font-medium text-muted-foreground cursor-not-allowed"
+                      >
+                        Chat Coming Soon
                       </button>
                     </div>
                   </div>
@@ -257,10 +261,7 @@ export default function TenantDashboardPage() {
               <div className="glass rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-foreground">Recent Payments</h2>
-                  {/* TODO: Link to GET /api/tenants/me/payments */}
-                  <Link href="/tenant/payments" className="text-primary hover:underline text-sm">
-                    View All
-                  </Link>
+                  <span className="text-sm text-muted-foreground">Payments coming soon</span>
                 </div>
 
                 <div className="space-y-4">
@@ -298,7 +299,7 @@ export default function TenantDashboardPage() {
 
               <VerificationStatusWidget
                 verificationStatus={mockUser.verificationStatus}
-                actionHref="/tenant/profile?tab=verification"
+                actionHref="/tenant/verification"
                 actionLabel="Complete Verification"
               />
 

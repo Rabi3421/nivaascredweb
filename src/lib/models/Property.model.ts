@@ -43,6 +43,7 @@ export interface IProperty {
   noticePeriodDays?: number;
   availableFrom?: Date;
   availabilityStatus: "available" | "rented" | "inactive" | "pending_review";
+  verificationStatus: "unverified" | "pending" | "approved" | "rejected";
   averageRating: number;
   totalReviews: number;
   views: number;
@@ -214,6 +215,14 @@ const PropertySchema = new Schema<IPropertyDocument>(
         message: "{VALUE} is not a valid availability status",
       },
       default: "available",
+    },
+    verificationStatus: {
+      type: String,
+      enum: {
+        values: ["unverified", "pending", "approved", "rejected"],
+        message: "{VALUE} is not a valid verification status",
+      },
+      default: "unverified",
     },
     averageRating: {
       type: Number,

@@ -46,6 +46,7 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,md,json}\"",
     "serve": "next start",
+    "seed:superadmin": "node --env-file=.env scripts/seed-superadmin.mjs",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

@@ -39,6 +39,7 @@ export interface IVerificationDocumentFile {
 
 export interface IVerification {
   userId: Types.ObjectId;
+  propertyId?: Types.ObjectId;
   type: VerificationType;
   status: VerificationStatus;
   documents: IVerificationDocumentFile[];
@@ -112,6 +113,11 @@ const VerificationSchema = new Schema<IVerificationDocument>(
       ref: "User",
       required: [true, "userId is required"],
     },
+    propertyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Property",
+      default: null,
+    },
     type: {
       type: String,
       enum: {
@@ -179,13 +185,10 @@ const VerificationSchema = new Schema<IVerificationDocument>(
 
 // ─── Indexes ──────────────────────────────────────────────────────
 
-// Unique: one active verification per type per user
-VerificationSchema.index(
-  { userId: 1, type: 1 },
-  { unique: true }
-);
+VerificationSchema.index({ userId: 1, type: 1, createdAt: -1 });
 VerificationSchema.index({ status: 1 });
 VerificationSchema.index({ reviewedBy: 1 });
+VerificationSchema.index({ propertyId: 1, status: 1 });
 
 // ─── Model ────────────────────────────────────────────────────────
 
