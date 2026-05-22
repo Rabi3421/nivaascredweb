@@ -8,6 +8,7 @@ import StatCard from "@/components/ui/StatCard";
 import Icon from "@/components/ui/AppIcon";
 import AppImage from "@/components/ui/AppImage";
 import Link from "next/link";
+import ScoreCard from "@/components/score/ScoreCard";
 
 export const metadata: Metadata = {
   title: "Tenant Dashboard - RentTrust",
@@ -114,7 +115,7 @@ export default function TenantDashboardPage() {
           avatar={mockUser.avatar}
           actions={[
             { label: "Find Home", href: "/tenant/find-home", icon: "MagnifyingGlassIcon", variant: "primary" },
-            { label: "Edit Profile", href: "/tenant/profile", icon: "UserIcon", variant: "outline" },
+            { label: "My Applications", href: "/tenant/applications", icon: "DocumentTextIcon", variant: "outline" },
           ]}
         />
 
@@ -293,24 +294,7 @@ export default function TenantDashboardPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Credit Score Widget */}
-              <div className="glass rounded-2xl p-6 text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-success to-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-white">
-                    {mockUser.creditTier.charAt(0)}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">Credit Score</h3>
-                <p className="text-3xl font-bold text-foreground mb-1">{mockUser.creditScore}</p>
-                <p className="text-sm text-success mb-4">{mockUser.creditTier} Rating</p>
-                {/* TODO: Link to GET /api/credit-reports/me */}
-                <Link
-                  href="/credit-score"
-                  className="w-full px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-secondary transition-colors block text-center"
-                >
-                  View Credit Report
-                </Link>
-              </div>
+              <ScoreCard role="tenant" />
 
               <VerificationStatusWidget
                 verificationStatus={mockUser.verificationStatus}

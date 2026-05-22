@@ -26,7 +26,7 @@ export default function PropertyListingsPage() {
           </div>
         </section>
 
-        {/* Property Listings */}
+        {/* TODO: PropertyListingsInteractive should fetch GET /api/properties with search/filter params */}
         <PropertyListingsInteractive />
       </main>
       <Footer />

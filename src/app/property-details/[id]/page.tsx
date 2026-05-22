@@ -1,106 +1,68 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import Icon from "@/components/ui/AppIcon";
 import AppImage from "@/components/ui/AppImage";
 import Link from "next/link";
+import connectDB from "@/lib/db";
+import { PropertyModel } from "@/lib/models";
+import PropertyApplyCTA from "./components/PropertyApplyCTA";
+import type { ApiProperty } from "@/lib/api/properties";
 
-export const metadata: Metadata = {
-  title: "3BHK Luxury Apartment in Koramangala - RentTrust",
-  description: "Spacious 3BHK apartment in prime Koramangala location with verified landlord reviews. ₹45,000/month with modern amenities and excellent connectivity.",
-  keywords: ["3BHK apartment", "Koramangala rental", "luxury apartment", "verified landlord", "Bangalore rental", "premium property"],
-};
+type PageProps = { params: Promise<{ id: string }> };
 
-export default function PropertyDetailsPage() {
-  const property = {
-    id: 1,
-    title: "3BHK Luxury Apartment in Koramangala",
-    location: "Koramangala 5th Block, Bangalore",
-    rent: 45000,
-    deposit: 180000,
-    type: "3BHK",
-    area: 1450,
-    furnishing: "Semi-Furnished",
-    floor: "7th Floor of 12",
-    age: "3 Years",
-    parking: "2 Covered Parking",
-    images: [
-      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
-      "https://images.unsplash.com/photo-1565182999561-18d7dc61c393",
-      "https://images.unsplash.com/photo-1584622781564-1d987140d97a",
-      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7"
-    ],
-    rating: 4.8,
-    reviewCount: 27,
-    verificationStatus: "High Credit",
-    availableFrom: "15th March 2026"
+async function fetchProperty(id: string): Promise<ApiProperty | null> {
+  try {
+    await connectDB();
+    const property = await PropertyModel.findById(id)
+      .populate({ path: "landlordId", select: "fullName avatar isEmailVerified" })
+      .lean();
+    return property ? (JSON.parse(JSON.stringify(property)) as ApiProperty) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const property = await fetchProperty(id);
+  if (!property) {
+    return { title: "Property Not Found - NivaasCred" };
+  }
+  const landlord = typeof property.landlordId === "object" ? property.landlordId : null;
+  return {
+    title: `${property.title} - NivaasCred`,
+    description: `${property.propertyType} in ${property.address.locality}, ${property.city}. ₹${property.rentAmount.toLocaleString()}/month. ${property.furnishingStatus.replace(/_/g, " ")}.`,
+    keywords: [property.propertyType, property.city, property.state, "rental", "NivaasCred", landlord?.fullName ?? ""].filter(Boolean),
+  };
+}
+
+export default async function PropertyDetailsPage({ params }: PageProps) {
+  const { id } = await params;
+  const property = await fetchProperty(id);
+
+  if (!property) notFound();
+
+  const landlord = typeof property.landlordId === "object" ? property.landlordId : null;
+  const primaryImage =
+    property.images?.find((img) => img.isPrimary)?.url ??
+    property.images?.[0]?.url ??
+    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267";
+
+  const furnishingLabel: Record<string, string> = {
+    unfurnished: "Unfurnished",
+    semi_furnished: "Semi-Furnished",
+    fully_furnished: "Fully Furnished",
   };
 
-  const landlord = {
-    name: "Priya Sharma",
-    image: "https://img.rocket.new/generatedImages/rocket_gen_img_14224793d-1763292347593.png",
-    rating: 4.9,
-    reviewCount: 45,
-    propertiesCount: 6,
-    responseTime: "within 2 hours",
-    memberSince: "January 2023",
-    verificationBadges: ["Identity Verified", "Property Verified", "Income Verified"]
+  const statusLabel: Record<string, { text: string; cls: string }> = {
+    available: { text: "Available", cls: "bg-success text-white" },
+    rented: { text: "Rented", cls: "bg-warning text-white" },
+    inactive: { text: "Inactive", cls: "bg-muted text-muted-foreground" },
+    pending_review: { text: "Pending Review", cls: "bg-accent text-white" },
   };
-
-  const amenities = [
-    { name: "24/7 Security", icon: "ShieldCheckIcon" },
-    { name: "Power Backup", icon: "BoltIcon" },
-    { name: "Lift", icon: "ArrowUpIcon" },
-    { name: "Gym", icon: "FireIcon" },
-    { name: "Swimming Pool", icon: "SwatchIcon" },
-    { name: "Children's Park", icon: "UserIcon" },
-    { name: "Visitor Parking", icon: "TruckIcon" },
-    { name: "Water Storage", icon: "CloudIcon" },
-    { name: "Internet Ready", icon: "WifiIcon" },
-    { name: "Club House", icon: "BuildingOfficeIcon" },
-    { name: "Waste Management", icon: "TrashIcon" },
-    { name: "CCTV Surveillance", icon: "VideoCameraIcon" }
-  ];
-
-  const nearbyPlaces = [
-    { name: "Forum Mall", distance: "0.5 km", type: "Shopping" },
-    { name: "Manipal Hospital", distance: "1.2 km", type: "Healthcare" },
-    { name: "Koramangala Metro", distance: "0.8 km", type: "Transport" },
-    { name: "Jyoti Nivas College", distance: "1.5 km", type: "Education" },
-    { name: "BDA Complex", distance: "0.3 km", type: "Recreation" },
-    { name: "Sony Signal", distance: "2.1 km", type: "Transport" }
-  ];
-
-  const reviews = [
-    {
-      id: 1,
-      tenant: "Rahul Kumar",
-      rating: 5,
-      date: "February 2026",
-      duration: "2 Years",
-      review: "Excellent property with all promised amenities. Priya aunty is very responsive and maintains the property well. Great location with easy access to everything.",
-      avatar: "https://img.rocket.new/generatedImages/rocket_gen_img_14224793d-1763292347593.png"
-    },
-    {
-      id: 2,
-      tenant: "Sneha Patel",
-      rating: 4,
-      date: "January 2026",
-      duration: "1.5 Years", 
-      review: "Good apartment but had some initial plumbing issues which were fixed quickly. Overall satisfied with the stay. Would recommend to working professionals.",
-      avatar: "https://img.rocket.new/generatedImages/rocket_gen_img_14224793d-1763292347593.png"
-    },
-    {
-      id: 3,
-      tenant: "Arun Menon",
-      rating: 5,
-      date: "December 2025",
-      duration: "3 Years",
-      review: "Been staying here for 3 years. Great community, excellent maintenance staff, and the landlord is very understanding. Best rental experience in Bangalore.",
-      avatar: "https://img.rocket.new/generatedImages/rocket_gen_img_14224793d-1763292347593.png"
-    }
-  ];
+  const badge = statusLabel[property.availabilityStatus] ?? statusLabel.available;
 
   return (
     <div className="min-h-screen bg-background">
@@ -112,25 +74,28 @@ export default function PropertyDetailsPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 rounded-2xl overflow-hidden">
               <div className="md:col-span-2 md:row-span-2">
                 <AppImage
-                  src={property.images[0]}
-                  alt="Main apartment view showing living room with modern furniture"
+                  src={primaryImage}
+                  alt={`${property.title} main view`}
                   className="w-full h-64 md:h-full object-cover hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              
-              {property.images.slice(1, 5).map((image, index) => (
+              {(property.images ?? []).slice(1, 5).map((image, index) => (
                 <div key={index} className="relative group cursor-pointer">
                   <AppImage
-                    src={image}
-                    alt={`Property interior view ${index + 2}`}
+                    src={image.url}
+                    alt={image.alt ?? `Property view ${index + 2}`}
                     className="w-full h-32 md:h-40 object-cover hover:scale-105 transition-transform duration-300"
                   />
-                  {index === 3 && (
+                  {index === 3 && (property.images?.length ?? 0) > 5 && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-semibold">
-                      <span>+5 More Photos</span>
+                      +{(property.images?.length ?? 0) - 5} More
                     </div>
                   )}
                 </div>
+              ))}
+              {/* Placeholder tiles if fewer than 4 extra images */}
+              {Array.from({ length: Math.max(0, 4 - (property.images?.length ?? 1) + 1) }).map((_, i) => (
+                <div key={`ph-${i}`} className="hidden md:block bg-muted h-32 md:h-40" />
               ))}
             </div>
           </div>
@@ -140,212 +105,201 @@ export default function PropertyDetailsPage() {
         <section className="px-4 py-8">
           <div className="container mx-auto max-w-7xl">
             <div className="grid lg:grid-cols-3 gap-12">
-              {/* Left Column */}
+              {/* ── Left Column ── */}
               <div className="lg:col-span-2 space-y-8">
                 {/* Basic Info */}
                 <div>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="px-3 py-1 bg-success text-white text-sm font-bold rounded-full">
-                      Verified
-                    </div>
-                    <div className="px-3 py-1 bg-primary text-white text-sm font-bold rounded-full">
-                      {property.verificationStatus}
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Icon name="StarIcon" variant="solid" size={16} className="text-warning" />
-                      <span className="font-semibold text-foreground">{property.rating}</span>
-                      <span className="text-muted-foreground">({property.reviewCount} reviews)</span>
-                    </div>
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <span className={`px-3 py-1 text-sm font-bold rounded-full ${badge.cls}`}>
+                      {badge.text}
+                    </span>
+                    <span className="px-3 py-1 bg-primary text-white text-sm font-bold rounded-full">
+                      {property.propertyType}
+                    </span>
+                    {landlord?.isEmailVerified && (
+                      <span className="flex items-center space-x-1 px-3 py-1 bg-success/10 text-success text-sm font-bold rounded-full">
+                        <Icon name="ShieldCheckIcon" size={14} />
+                        <span>Verified Landlord</span>
+                      </span>
+                    )}
+                    {property.averageRating > 0 && (
+                      <div className="flex items-center space-x-1">
+                        <Icon name="StarIcon" variant="solid" size={16} className="text-warning" />
+                        <span className="font-semibold text-foreground">
+                          {property.averageRating.toFixed(1)}
+                        </span>
+                        <span className="text-muted-foreground">
+                          ({property.totalReviews} review{property.totalReviews !== 1 ? "s" : ""})
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
                     {property.title}
                   </h1>
-                  
+
                   <div className="flex items-center text-muted-foreground mb-6">
-                    <Icon name="MapPinIcon" size={20} className="mr-2" />
-                    <span>{property.location}</span>
+                    <Icon name="MapPinIcon" size={20} className="mr-2 flex-shrink-0" />
+                    <span>
+                      {property.address.locality}, {property.address.city},{" "}
+                      {property.address.state} — {property.address.pincode}
+                    </span>
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-4 mb-6">
                     <div className="glass rounded-xl p-4">
-                      <p className="text-2xl font-bold text-foreground">₹{property.rent.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        ₹{property.rentAmount.toLocaleString()}
+                      </p>
                       <p className="text-muted-foreground text-sm">per month</p>
                     </div>
                     <div className="glass rounded-xl p-4">
-                      <p className="text-2xl font-bold text-foreground">₹{property.deposit.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        ₹{property.depositAmount.toLocaleString()}
+                      </p>
                       <p className="text-muted-foreground text-sm">security deposit</p>
                     </div>
-                    <div className="glass rounded-xl p-4">
-                      <p className="text-2xl font-bold text-foreground">{property.area} sq ft</p>
-                      <p className="text-muted-foreground text-sm">built-up area</p>
-                    </div>
+                    {property.areaSqFt ? (
+                      <div className="glass rounded-xl p-4">
+                        <p className="text-2xl font-bold text-foreground">
+                          {property.areaSqFt} sq ft
+                        </p>
+                        <p className="text-muted-foreground text-sm">built-up area</p>
+                      </div>
+                    ) : (
+                      <div className="glass rounded-xl p-4">
+                        <p className="text-2xl font-bold text-foreground">
+                          {property.bedrooms}BR / {property.bathrooms}BA
+                        </p>
+                        <p className="text-muted-foreground text-sm">bed & bath</p>
+                      </div>
+                    )}
                   </div>
+
+                  {property.description && (
+                    <p className="text-muted-foreground leading-relaxed">
+                      {property.description}
+                    </p>
+                  )}
                 </div>
 
                 {/* Property Features */}
                 <div className="glass rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Property Features</h2>
+                  <h2 className="text-xl font-bold text-foreground mb-4">
+                    Property Features
+                  </h2>
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="flex items-center justify-between py-3 border-b border-border">
-                      <span className="text-muted-foreground">Type</span>
-                      <span className="font-semibold text-foreground">{property.type}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-border">
-                      <span className="text-muted-foreground">Furnishing</span>
-                      <span className="font-semibold text-foreground">{property.furnishing}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-border">
-                      <span className="text-muted-foreground">Floor</span>
-                      <span className="font-semibold text-foreground">{property.floor}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-border">
-                      <span className="text-muted-foreground">Property Age</span>
-                      <span className="font-semibold text-foreground">{property.age}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-border">
-                      <span className="text-muted-foreground">Parking</span>
-                      <span className="font-semibold text-foreground">{property.parking}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-border">
-                      <span className="text-muted-foreground">Available From</span>
-                      <span className="font-semibold text-foreground">{property.availableFrom}</span>
-                    </div>
+                    {[
+                      { label: "Type", value: property.propertyType },
+                      {
+                        label: "Furnishing",
+                        value: furnishingLabel[property.furnishingStatus] ?? property.furnishingStatus,
+                      },
+                      { label: "Bedrooms", value: String(property.bedrooms) },
+                      { label: "Bathrooms", value: String(property.bathrooms) },
+                      ...(property.areaSqFt
+                        ? [{ label: "Area", value: `${property.areaSqFt} sq ft` }]
+                        : []),
+                      ...(property.noticePeriodDays !== undefined
+                        ? [{ label: "Notice Period", value: `${property.noticePeriodDays} days` }]
+                        : []),
+                      ...(property.maintenanceCharges
+                        ? [{ label: "Maintenance", value: `₹${property.maintenanceCharges.toLocaleString()}/mo` }]
+                        : []),
+                      { label: "Pets Allowed", value: property.petsAllowed ? "Yes" : "No" },
+                      ...(property.availableFrom
+                        ? [
+                            {
+                              label: "Available From",
+                              value: new Date(property.availableFrom).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              }),
+                            },
+                          ]
+                        : []),
+                    ].map(({ label, value }) => (
+                      <div
+                        key={label}
+                        className="flex items-center justify-between py-3 border-b border-border"
+                      >
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className="font-semibold text-foreground">{value}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Amenities */}
-                <div className="glass rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Amenities</h2>
-                  <div className="grid md:grid-cols-3 gap-4">
-                    {amenities.map((amenity, index) => (
-                      <div key={index} className="flex items-center space-x-3 p-3 bg-muted/30 rounded-xl">
-                        <Icon name={amenity.icon} size={20} className="text-primary" />
-                        <span className="text-foreground">{amenity.name}</span>
-                      </div>
-                    ))}
+                {(property.amenities ?? []).length > 0 && (
+                  <div className="glass rounded-2xl p-6">
+                    <h2 className="text-xl font-bold text-foreground mb-4">Amenities</h2>
+                    <div className="flex flex-wrap gap-3">
+                      {property.amenities.map((amenity) => (
+                        <span
+                          key={amenity}
+                          className="flex items-center space-x-2 px-4 py-2 bg-muted/30 rounded-xl text-foreground text-sm"
+                        >
+                          <Icon name="CheckCircleIcon" size={16} className="text-success flex-shrink-0" />
+                          <span>{amenity}</span>
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* Location & Nearby */}
+                {/* Reviews placeholder */}
                 <div className="glass rounded-2xl p-6">
-                  <h2 className="text-xl font-bold text-foreground mb-4">Location & Nearby Places</h2>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {nearbyPlaces.map((place, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl">
-                        <div>
-                          <p className="font-semibold text-foreground">{place.name}</p>
-                          <p className="text-sm text-muted-foreground">{place.type}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-primary">{place.distance}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Reviews */}
-                <div className="glass rounded-2xl p-6">
-                  <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-bold text-foreground">Tenant Reviews</h2>
-                    <Link href="#" className="text-primary hover:underline">View All Reviews</Link>
                   </div>
-
-                  <div className="space-y-6">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="border-b border-border pb-6 last:border-b-0 last:pb-0">
-                        <div className="flex items-start space-x-4">
-                          <AppImage
-                            src={review.avatar}
-                            alt={`${review.tenant} profile photo`}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
-                              <div>
-                                <p className="font-semibold text-foreground">{review.tenant}</p>
-                                <p className="text-sm text-muted-foreground">Stayed {review.duration} • {review.date}</p>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                {[...Array(5)].map((_, i) => (
-                                  <Icon
-                                    key={i}
-                                    name="StarIcon"
-                                    variant={i < review.rating ? "solid" : "outline"}
-                                    size={16}
-                                    className="text-warning"
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                            <p className="text-muted-foreground">{review.review}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Reviews will be available once tenants have completed their stay.
+                  </p>
                 </div>
               </div>
 
-              {/* Right Column - Landlord Info & Actions */}
+              {/* ── Right Column ── */}
               <div className="lg:col-span-1">
                 <div className="sticky top-24 space-y-6">
                   {/* Landlord Card */}
                   <div className="glass rounded-2xl p-6">
                     <div className="text-center mb-6">
-                      <AppImage
-                        src={landlord.image}
-                        alt={`${landlord.name} profile photo`}
-                        className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
-                      />
-                      <h3 className="text-xl font-bold text-foreground">{landlord.name}</h3>
-                      <div className="flex items-center justify-center space-x-1 mb-2">
-                        <Icon name="StarIcon" variant="solid" size={16} className="text-warning" />
-                        <span className="font-semibold text-foreground">{landlord.rating}</span>
-                        <span className="text-muted-foreground">({landlord.reviewCount})</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Member since {landlord.memberSince}</p>
-                    </div>
-
-                    <div className="space-y-4 mb-6">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Properties</span>
-                        <span className="font-semibold text-foreground">{landlord.propertiesCount}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Response Time</span>
-                        <span className="font-semibold text-foreground">{landlord.responseTime}</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 mb-6">
-                      {landlord.verificationBadges.map((badge, index) => (
-                        <div key={index} className="flex items-center space-x-2 text-sm">
-                          <Icon name="CheckCircleIcon" size={16} className="text-success" />
-                          <span className="text-muted-foreground">{badge}</span>
+                      {landlord?.avatar ? (
+                        <AppImage
+                          src={landlord.avatar}
+                          alt={landlord.fullName}
+                          className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                          {landlord?.fullName?.charAt(0).toUpperCase() ?? "?"}
                         </div>
-                      ))}
+                      )}
+                      <h3 className="text-xl font-bold text-foreground">
+                        {landlord?.fullName ?? "Landlord"}
+                      </h3>
+                      {landlord?.isEmailVerified && (
+                        <span className="inline-flex items-center space-x-1 mt-1 text-xs text-success font-medium">
+                          <Icon name="CheckBadgeIcon" size={14} />
+                          <span>Email Verified</span>
+                        </span>
+                      )}
                     </div>
 
                     <div className="space-y-3">
-                      <button className="w-full px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-secondary transition-all duration-300 flex items-center justify-center space-x-2">
-                        <Icon name="PhoneIcon" size={20} />
-                        <span>Contact Landlord</span>
-                      </button>
-                      
+                      {/* Apply CTA — client component handles auth + modal */}
+                      <PropertyApplyCTA
+                        propertyId={property._id}
+                        propertyTitle={property.title}
+                      />
+
                       <button className="w-full px-6 py-3 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center space-x-2">
                         <Icon name="CalendarIcon" size={20} />
                         <span>Schedule Visit</span>
                       </button>
-
-                      <Link
-                        href={`/landlord-profile/${landlord.name.toLowerCase().replace(' ', '-')}`}
-                        className="w-full px-6 py-3 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted/80 transition-all duration-300 flex items-center justify-center space-x-2"
-                      >
-                        <Icon name="UserIcon" size={20} />
-                        <span>View Profile</span>
-                      </Link>
                     </div>
                   </div>
 
@@ -357,28 +311,51 @@ export default function PropertyDetailsPage() {
                         <Icon name="BookmarkIcon" size={20} className="text-muted-foreground" />
                         <span className="text-foreground">Save Property</span>
                       </button>
-                      
                       <button className="w-full p-3 bg-muted/50 rounded-xl text-left hover:bg-muted transition-colors flex items-center space-x-3">
                         <Icon name="ShareIcon" size={20} className="text-muted-foreground" />
                         <span className="text-foreground">Share Property</span>
                       </button>
-                      
-                      <button className="w-full p-3 bg-muted/50 rounded-xl text-left hover:bg-muted transition-colors flex items-center space-x-3">
-                        <Icon name="ExclamationTriangleIcon" size={20} className="text-muted-foreground" />
-                        <span className="text-foreground">Report Issue</span>
-                      </button>
                     </div>
                   </div>
 
-                  {/* Trust Score */}
+                  {/* Property summary card */}
                   <div className="glass rounded-2xl p-6">
-                    <h3 className="text-lg font-bold text-foreground mb-4">Trust Score</h3>
-                    <div className="text-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span className="text-2xl font-bold text-white">A+</span>
+                    <h3 className="text-lg font-bold text-foreground mb-4">Summary</h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Rent</span>
+                        <span className="font-semibold text-foreground">
+                          ₹{property.rentAmount.toLocaleString()}/mo
+                        </span>
                       </div>
-                      <p className="font-semibold text-foreground mb-2">Excellent Trust Rating</p>
-                      <p className="text-sm text-muted-foreground">Based on verification, reviews, and rental history</p>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Deposit</span>
+                        <span className="font-semibold text-foreground">
+                          ₹{property.depositAmount.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Type</span>
+                        <span className="font-semibold text-foreground">
+                          {property.propertyType}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Furnishing</span>
+                        <span className="font-semibold text-foreground">
+                          {furnishingLabel[property.furnishingStatus] ?? property.furnishingStatus}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <Link
+                        href="/property-listings"
+                        className="text-primary text-sm hover:underline flex items-center space-x-1"
+                      >
+                        <Icon name="ArrowLeftIcon" size={14} />
+                        <span>Back to Listings</span>
+                      </Link>
                     </div>
                   </div>
                 </div>

@@ -8,6 +8,8 @@ import Icon from "@/components/ui/AppIcon";
 import Link from "next/link";
 
 export default function TenantOnboardingPage() {
+  // TODO: Guard this page with auth middleware — redirect to /auth/login if no accessToken
+  // TODO: On final step submit, PUT /api/tenants/me/profile with collected formData
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -105,6 +107,7 @@ export default function TenantOnboardingPage() {
       </p>
 
       <div className="space-y-4">
+        {/* TODO: Redirect to /auth/signup?role=tenant — registration handled by POST /api/auth/register */}
         <button
           onClick={() => {
             handleInputChange('signupMethod', 'mobile');
@@ -115,7 +118,7 @@ export default function TenantOnboardingPage() {
           <Icon name="DevicePhoneMobileIcon" size={20} />
           <span>Sign up with Mobile Number</span>
         </button>
-        
+
         <button
           onClick={() => {
             handleInputChange('signupMethod', 'google');
@@ -285,6 +288,7 @@ export default function TenantOnboardingPage() {
             <p className="text-sm text-muted-foreground mb-3">
               Upload a clear photo of yourself
             </p>
+            {/* TODO: POST /api/uploads/presign { folder: "avatars" } → upload to S3 → PUT /api/users/me/avatar */}
             <button className="px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors">
               Choose Photo
             </button>
@@ -433,6 +437,7 @@ export default function TenantOnboardingPage() {
           <span>We'll send a verification request to your landlord to confirm this relationship</span>
         </div>
       </div>
+      {/* TODO: On submit, this rental relationship feeds into a RentalHistory import — POST handled in onboarding completion */}
     </div>
   );
 
@@ -484,6 +489,7 @@ export default function TenantOnboardingPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Supports JPG, PNG, PDF. Max 5MB
             </p>
+            {/* TODO: POST /api/uploads/presign { folder: "verifications" } → upload to S3 → POST /api/verifications */}
             <button className="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-secondary transition-colors">
               Choose File
             </button>
@@ -571,7 +577,8 @@ export default function TenantOnboardingPage() {
             <label className="block text-sm font-medium text-foreground mb-2">
               Text Review (Optional but recommended)
             </label>
-            <textarea
+            {/* TODO: Review form submission — POST /api/reviews { rentalId, overallRating, categories, text } */}
+          <textarea
               rows={4}
               className="w-full px-4 py-3 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-background resize-none"
               placeholder="Share your experience with this landlord to help future tenants..."
@@ -672,6 +679,7 @@ export default function TenantOnboardingPage() {
                 </button>
                 
                 <div className="flex space-x-3">
+                  {/* TODO: "Save & Resume Later" — PUT /api/tenants/me/profile with partial formData */}
                   <button className="px-4 py-3 text-primary font-semibold hover:bg-primary/10 rounded-xl transition-colors">
                     Save & Resume Later
                   </button>

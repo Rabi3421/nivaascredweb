@@ -1,3 +1,11 @@
+/** Status of a single verification request document — distinct from the UI VerificationStatus dict in user.ts */
+export type VerificationDocStatus =
+  | "pending"
+  | "under_review"
+  | "approved"
+  | "rejected"
+  | "expired";
+
 export type VerificationType =
   | "identity" // Aadhaar / Passport
   | "income" // Salary slip / ITR
@@ -6,7 +14,6 @@ export type VerificationType =
   | "background" // Police verification
   | "bank"; // Cancelled cheque / bank statement
 
-export type VerificationStatus = "pending" | "under_review" | "approved" | "rejected" | "expired";
 
 export interface VerificationDocumentFile {
   type:
@@ -33,7 +40,7 @@ export interface VerificationDocument {
   _id: string;
   userId: string; // ref → users
   type: VerificationType;
-  status: VerificationStatus;
+  status: VerificationDocStatus;
   documents: VerificationDocumentFile[];
   submittedAt: string;
   reviewedBy?: string; // ref → users (admin)
@@ -53,7 +60,7 @@ export interface VerificationQueueItem {
   userRole: "tenant" | "landlord";
   userAvatar?: string;
   type: VerificationType;
-  status: VerificationStatus;
+  status: VerificationDocStatus;
   documentCount: number;
   submittedAt: string;
   priority: "low" | "medium" | "high";
@@ -67,7 +74,7 @@ export interface SubmitVerificationPayload {
 
 /** Admin action on a verification */
 export interface ReviewVerificationPayload {
-  status: "approved" | "rejected";
+  status: Extract<VerificationDocStatus, "approved" | "rejected">;
   rejectionReason?: string;
   adminNotes?: string;
 }

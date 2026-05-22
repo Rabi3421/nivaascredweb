@@ -26,7 +26,7 @@ export default function UserProfilesPage() {
           </div>
         </section>
 
-        {/* User Profile */}
+        {/* TODO: UserProfileInteractive should fetch GET /api/users/:id (public profile) using [id] route param */}
         <UserProfileInteractive />
       </main>
       <Footer />

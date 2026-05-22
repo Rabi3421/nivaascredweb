@@ -8,6 +8,8 @@ import StatCard from "@/components/ui/StatCard";
 import Icon from "@/components/ui/AppIcon";
 import AppImage from "@/components/ui/AppImage";
 import Link from "next/link";
+import PropertyPortfolio from "@/components/landlord/PropertyPortfolio";
+import ScoreCard from "@/components/score/ScoreCard";
 
 export const metadata: Metadata = {
   title: "Landlord Dashboard - RentTrust",
@@ -56,58 +58,6 @@ const quickStats = [
   { label: "Pending Applications", value: 12, icon: "DocumentTextIcon", color: "text-warning", bgColor: "bg-warning/10" },
 ];
 
-// TODO: Replace with data from GET /api/landlords/me/properties
-const mockProperties = [
-  {
-    id: 1,
-    title: "3BHK Luxury Apartment",
-    location: "Koramangala 5th Block",
-    rent: 45000,
-    status: "Occupied",
-    tenant: {
-      name: "Rahul Kumar",
-      avatar: "https://img.rocket.new/generatedImages/rocket_gen_img_14224793d-1763292347593.png",
-      duration: "8 months",
-      nextPayment: "March 5, 2026",
-    },
-    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267",
-    rating: 4.8,
-    reviewCount: 27,
-    applications: undefined,
-    vacantSince: undefined,
-  },
-  {
-    id: 2,
-    title: "2BHK Near Metro",
-    location: "Indiranagar",
-    rent: 35000,
-    status: "Vacant",
-    tenant: null,
-    image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2",
-    rating: 4.6,
-    reviewCount: undefined,
-    applications: 8,
-    vacantSince: "February 2026",
-  },
-  {
-    id: 3,
-    title: "1BHK Studio Apartment",
-    location: "HSR Layout",
-    rent: 22000,
-    status: "Occupied",
-    tenant: {
-      name: "Sneha Patel",
-      avatar: "https://img.rocket.new/generatedImages/rocket_gen_img_14224793d-1763292347593.png",
-      duration: "4 months",
-      nextPayment: "March 8, 2026",
-    },
-    image: "https://images.unsplash.com/photo-1565182999561-18d7dc61c393",
-    rating: 4.9,
-    reviewCount: 12,
-    applications: undefined,
-    vacantSince: undefined,
-  },
-];
 
 // TODO: Replace with data from GET /api/landlords/me/applications?limit=3
 const mockRecentApplications = [
@@ -205,138 +155,15 @@ export default function LandlordDashboardPage() {
               <div className="glass rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-foreground">Property Portfolio</h2>
-                  {/* TODO: Link to GET /api/landlords/me/properties */}
                   <Link
-                    href="/landlord/my-properties"
-                    className="text-primary hover:underline text-sm"
+                    href="/landlord/property-management/add"
+                    className="flex items-center space-x-1 text-primary hover:underline text-sm"
                   >
-                    View All Properties
+                    <Icon name="PlusIcon" size={16} />
+                    <span>Add Property</span>
                   </Link>
                 </div>
-
-                <div className="space-y-6">
-                  {mockProperties.map((property) => (
-                    <div
-                      key={property.id}
-                      className="border border-border rounded-xl p-4 hover:shadow-md transition-all duration-300"
-                    >
-                      <div className="flex flex-col md:flex-row gap-4">
-                        <div className="w-full md:w-32 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                          <AppImage
-                            src={property.image}
-                            alt={property.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2 gap-2">
-                            <div>
-                              <h3 className="text-lg font-bold text-foreground">{property.title}</h3>
-                              <p className="text-muted-foreground text-sm">{property.location}</p>
-                            </div>
-                            <div className="text-right flex-shrink-0">
-                              <p className="text-lg font-bold text-foreground">
-                                ₹{property.rent.toLocaleString()}
-                              </p>
-                              <p className="text-xs text-muted-foreground">per month</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between flex-wrap gap-2">
-                            <div className="flex items-center space-x-4">
-                              <div
-                                className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                  property.status === "Occupied"
-                                    ? "bg-success/10 text-success"
-                                    : "bg-warning/10 text-warning"
-                                }`}
-                              >
-                                {property.status}
-                              </div>
-                              {property.rating && (
-                                <div className="flex items-center space-x-1">
-                                  <Icon name="StarIcon" size={14} className="text-warning" variant="solid" />
-                                  <span className="text-sm font-medium">{property.rating}</span>
-                                  {property.reviewCount && (
-                                    <span className="text-xs text-muted-foreground">
-                                      ({property.reviewCount})
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="flex space-x-2">
-                              <Link
-                                href={`/property-details/${property.id}`}
-                                className="px-3 py-1 bg-primary text-white rounded-lg text-xs font-medium hover:bg-secondary transition-colors"
-                              >
-                                View
-                              </Link>
-                              {/* TODO: Link to PUT /api/properties/:id */}
-                              <Link
-                                href={`/landlord/property-management/edit/${property.id}`}
-                                className="px-3 py-1 border border-border rounded-lg text-xs font-medium text-foreground hover:bg-muted transition-colors"
-                              >
-                                Edit
-                              </Link>
-                            </div>
-                          </div>
-
-                          {/* Tenant or Vacancy Info */}
-                          {property.tenant ? (
-                            <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-                              <div className="flex items-center justify-between flex-wrap gap-2">
-                                <div className="flex items-center space-x-3">
-                                  <AppImage
-                                    src={property.tenant.avatar}
-                                    alt={property.tenant.name}
-                                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                                  />
-                                  <div>
-                                    <p className="font-semibold text-foreground text-sm">
-                                      {property.tenant.name}
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">
-                                      Tenant for {property.tenant.duration}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <p className="text-xs text-muted-foreground">Next payment</p>
-                                  <p className="text-sm font-semibold text-foreground">
-                                    {property.tenant.nextPayment}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="mt-3 p-3 bg-warning/10 rounded-lg">
-                              <div className="flex items-center justify-between flex-wrap gap-2">
-                                <div>
-                                  <p className="text-sm font-semibold text-foreground">
-                                    Vacant since {property.vacantSince}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {property.applications} applications pending
-                                  </p>
-                                </div>
-                                {/* TODO: Link to GET /api/landlords/me/applications?propertyId=:id */}
-                                <Link
-                                  href={`/landlord/tenant-requests?property=${property.id}`}
-                                  className="px-3 py-1 bg-warning text-white rounded-lg text-xs font-medium hover:bg-warning/90 transition-colors"
-                                >
-                                  Review Applications
-                                </Link>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <PropertyPortfolio />
               </div>
 
               {/* Recent Applications */}
@@ -445,6 +272,8 @@ export default function LandlordDashboardPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
+              <ScoreCard role="landlord" />
+
               {/* Portfolio Overview */}
               <div className="glass rounded-2xl p-6">
                 <h3 className="text-lg font-bold text-foreground mb-4">Portfolio Overview</h3>

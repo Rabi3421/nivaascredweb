@@ -8,6 +8,8 @@ import Icon from "@/components/ui/AppIcon";
 import Link from "next/link";
 
 export default function LandlordOnboardingPage() {
+  // TODO: Guard this page with auth middleware — redirect to /auth/login if no accessToken
+  // TODO: On final step submit, PUT /api/landlords/me/profile with collected formData
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -114,6 +116,7 @@ export default function LandlordOnboardingPage() {
       </p>
 
       <div className="space-y-4">
+        {/* TODO: Redirect to /auth/signup?role=landlord — registration handled by POST /api/auth/register */}
         <button
           onClick={() => {
             handleInputChange('signupMethod', 'mobile');
@@ -282,6 +285,7 @@ export default function LandlordOnboardingPage() {
             <p className="text-sm text-muted-foreground mb-3">
               Upload a professional photo of yourself
             </p>
+            {/* TODO: POST /api/uploads/presign { folder: "avatars" } → upload to S3 → PUT /api/users/me/avatar */}
             <button className="px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors">
               Choose Photo
             </button>
@@ -384,6 +388,7 @@ export default function LandlordOnboardingPage() {
           <span>No full address needed yet. We'll collect detailed information later when you're ready to list.</span>
         </div>
       </div>
+      {/* TODO: Property data collected here feeds into POST /api/properties (full listing) after onboarding */}
     </div>
   );
 
@@ -457,6 +462,7 @@ export default function LandlordOnboardingPage() {
           <span>We'll send an invitation to your tenant to join and verify this relationship</span>
         </div>
       </div>
+      {/* TODO: Tenant invite — POST /api/rentals/invite { tenantContact, propertyId, startDate, rentAmount } */}
     </div>
   );
 
@@ -508,6 +514,7 @@ export default function LandlordOnboardingPage() {
             <p className="text-sm text-muted-foreground mb-4">
               Supports JPG, PNG, PDF. Max 5MB
             </p>
+            {/* TODO: POST /api/uploads/presign { folder: "verifications" } → upload to S3 → POST /api/verifications */}
             <button className="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-secondary transition-colors">
               Choose File
             </button>
@@ -694,6 +701,7 @@ export default function LandlordOnboardingPage() {
                 </button>
                 
                 <div className="flex space-x-3">
+                  {/* TODO: "Save & Resume Later" — PUT /api/landlords/me/profile with partial formData */}
                   <button className="px-4 py-3 text-primary font-semibold hover:bg-primary/10 rounded-xl transition-colors">
                     Save & Resume Later
                   </button>

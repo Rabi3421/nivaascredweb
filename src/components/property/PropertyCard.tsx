@@ -116,7 +116,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </div>
           </div>
           <Link
-            href={`/property-listings/${property.id}`}
+            href={`/property-details/${property.id}`}
             className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-secondary transition-all"
           >
             View Details

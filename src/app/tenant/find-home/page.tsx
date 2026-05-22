@@ -9,6 +9,9 @@ import AppImage from "@/components/ui/AppImage";
 import Link from "next/link";
 
 export default function FindHomePage() {
+  // TODO: On search/filter change, fetch GET /api/properties with filter params (replace local `properties` array)
+  // TODO: On tab "saved", fetch GET /api/tenants/me/saved-properties
+  // TODO: On tab "applied", fetch GET /api/tenants/me/applications
   const [activeTab, setActiveTab] = useState<'search' | 'saved' | 'applied'>('search');
   const [filters, setFilters] = useState({
     location: '',
@@ -369,7 +372,8 @@ export default function FindHomePage() {
                     </div>
                     
                     <div className="absolute top-4 right-4 flex space-x-2">
-                      <button 
+                      {/* TODO: Toggle saved — PUT /api/tenants/me/saved-properties/:propertyId */}
+                      <button
                         className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
                           property.saved ? 'bg-warning text-white' : 'bg-white/90 text-muted-foreground hover:bg-white'
                         }`}
@@ -464,6 +468,7 @@ export default function FindHomePage() {
                       >
                         View Details
                       </Link>
+                      {/* TODO: "Contact" / Apply — POST /api/applications { propertyId, moveInDate, message } */}
                       <button className="flex-1 px-4 py-2 border border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary hover:text-white transition-colors">
                         Contact
                       </button>
