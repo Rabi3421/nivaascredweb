@@ -266,7 +266,7 @@ export default function HelpCenterPage() {
                     {category.articles.map((article, articleIndex) => (
                       <Link
                         key={articleIndex}
-                        href="#"
+                        href="/support"
                         className="block text-sm text-muted-foreground hover:text-primary transition-colors"
                       >
                         • {article}
@@ -275,7 +275,7 @@ export default function HelpCenterPage() {
                   </div>
                   
                   <Link
-                    href="#"
+                    href="/support"
                     className="inline-flex items-center space-x-2 text-primary font-semibold mt-4 hover:text-secondary transition-colors"
                   >
                     <span>View all articles</span>

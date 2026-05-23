@@ -15,6 +15,10 @@ import {
 } from "@/lib/api-response";
 import { RegisterSchema } from "@/lib/validations/auth";
 
+function isMobileClient(req: NextRequest): boolean {
+  return req.headers.get("x-client-type") === "mobile";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -69,9 +73,12 @@ export async function POST(req: NextRequest) {
 
     const response = createdResponse("Registration successful", {
       user: toSafeUser(user),
+      ...(isMobileClient(req) ? { accessToken, refreshToken } : {}),
     });
 
-    setAuthCookies(response as NextResponse, accessToken, refreshToken);
+    if (!isMobileClient(req)) {
+      setAuthCookies(response as NextResponse, accessToken, refreshToken);
+    }
     return response;
   } catch (error) {
     if (error instanceof ZodError) {

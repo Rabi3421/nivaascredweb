@@ -441,7 +441,7 @@ export default function PrivacyPolicyPage() {
                   <div className="bg-primary/10 border border-primary/20 rounded-xl p-4">
                     <div className="flex items-center space-x-2">
                       <Icon name="ComputerDesktopIcon" size={20} className="text-primary" />
-                      <Link href="/legal/cookie-policy" className="text-primary font-semibold hover:underline">
+                      <Link href="/legal/privacy" className="text-primary font-semibold hover:underline">
                         Read our detailed Cookie Policy
                       </Link>
                     </div>
@@ -485,13 +485,13 @@ export default function PrivacyPolicyPage() {
                 <p className="text-muted-foreground text-sm">Our complete terms of service</p>
               </Link>
               
-              <Link href="/legal/data-usage" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+              <Link href="/legal/privacy" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
                 <Icon name="CircleStackIcon" size={24} className="text-primary mb-3" />
                 <h3 className="text-lg font-bold text-foreground mb-2">Data Usage Policy</h3>
                 <p className="text-muted-foreground text-sm">How we use and process your data</p>
               </Link>
               
-              <Link href="/support/privacy" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+              <Link href="/support" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
                 <Icon name="QuestionMarkCircleIcon" size={24} className="text-primary mb-3" />
                 <h3 className="text-lg font-bold text-foreground mb-2">Privacy Support</h3>
                 <p className="text-muted-foreground text-sm">Get help with privacy questions</p>

@@ -88,5 +88,5 @@ npm run build
 - No disputes workflow.
 - No real-time notification system.
 - No external KYC provider.
-- No React Native/mobile app yet.
+- React Native app exists, but app-store signing, deep links, push notifications, and file upload are not part of the MVP.
 - Some dashboard analytics remain placeholder until payment/property analytics modules are built.

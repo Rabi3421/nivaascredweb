@@ -24,9 +24,9 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { name: "Twitter", icon: "twitter", href: "#" },
-    { name: "LinkedIn", icon: "linkedin", href: "#" },
-    { name: "Instagram", icon: "instagram", href: "#" },
+    { name: "Twitter", icon: "twitter", href: "/support" },
+    { name: "LinkedIn", icon: "linkedin", href: "/support" },
+    { name: "Instagram", icon: "instagram", href: "/support" },
   ];
 
   return (

@@ -1,4 +1,5 @@
 import { TokenExpiredError } from "jsonwebtoken";
+import { headers } from "next/headers";
 import connectDB from "@/lib/db";
 import {
   UserModel,
@@ -16,9 +17,16 @@ import {
   handleRouteError,
 } from "@/lib/api-response";
 
+async function getBearerToken(): Promise<string | undefined> {
+  const headerStore = await headers();
+  const authorization = headerStore.get("authorization");
+  if (!authorization?.startsWith("Bearer ")) return undefined;
+  return authorization.slice("Bearer ".length).trim();
+}
+
 export async function GET() {
   try {
-    const token = await getAccessTokenFromCookies();
+    const token = (await getBearerToken()) ?? (await getAccessTokenFromCookies());
     if (!token) throw new ApiError("Unauthorized", 401);
 
     let decoded;

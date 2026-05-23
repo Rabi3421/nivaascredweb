@@ -64,6 +64,8 @@ This project uses Tailwind CSS for styling with the following features:
 - `npm run lint` - Run ESLint to check code quality
 - `npm run lint:fix` - Fix ESLint issues automatically
 - `npm run format` - Format code with Prettier
+- `npm run type-check` - Run TypeScript without emitting build files
+- `npm run seed:superadmin` - Create the configured superadmin if missing
 
 ## 📱 Deployment
 
@@ -72,6 +74,34 @@ Build the application for production:
   ```bash
   npm run build
   ```
+
+## NivaasCred Environment
+
+Required server variables:
+
+- `NODE_ENV`
+- `APP_URL`
+- `NEXT_PUBLIC_API_URL`
+- `MONGODB_URI`
+- `JWT_ACCESS_SECRET`
+- `JWT_REFRESH_SECRET`
+- `ACCESS_TOKEN_EXPIRES_IN`
+- `REFRESH_TOKEN_EXPIRES_IN`
+- `SUPERADMIN_FULL_NAME`
+- `SUPERADMIN_EMAIL`
+- `SUPERADMIN_PHONE`
+- `SUPERADMIN_PASSWORD`
+
+Generate JWT secrets with `openssl rand -base64 64`. Keep real values only in `.env`, `.env.local`, or your deployment provider secret store. Do not commit production secrets.
+
+## Deployment Notes
+
+- MongoDB Atlas: create a dedicated database, configure a least-privilege user, whitelist the deployment environment, and confirm indexes against `DATABASE_INDEXES.md`.
+- Vercel: set all required env variables in Project Settings, deploy from the `nivaascred` project folder, and verify `GET /api/health`.
+- React Native: set `API_TARGET` and the corresponding URL in `nivaasCredApp/src/config/api.ts` before building for emulator, simulator, physical device, or production.
+- Superadmin: after production env variables are set, run `npm run seed:superadmin` once. The script is idempotent by email.
+
+More detailed release steps live in `DEPLOYMENT_GUIDE.md`, `RELEASE_CHECKLIST.md`, `WEB_TESTING_CHECKLIST.md`, and `MOBILE_TESTING_CHECKLIST.md`.
 
 ## 📚 Learn More
 

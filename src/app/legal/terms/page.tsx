@@ -353,13 +353,13 @@ export default function TermsAndConditionsPage() {
                 <p className="text-muted-foreground text-sm">Learn how we protect your personal information</p>
               </Link>
               
-              <Link href="/legal/data-usage" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+              <Link href="/legal/privacy" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
                 <Icon name="DocumentTextIcon" size={24} className="text-primary mb-3" />
                 <h3 className="text-lg font-bold text-foreground mb-2">Data Usage Policy</h3>
                 <p className="text-muted-foreground text-sm">Understand how we use and share your data</p>
               </Link>
               
-              <Link href="/legal/cookie-policy" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+              <Link href="/legal/privacy" className="glass rounded-xl p-6 hover:shadow-lg transition-all duration-300">
                 <Icon name="ComputerDesktopIcon" size={24} className="text-primary mb-3" />
                 <h3 className="text-lg font-bold text-foreground mb-2">Cookie Policy</h3>
                 <p className="text-muted-foreground text-sm">Information about cookies and tracking</p>

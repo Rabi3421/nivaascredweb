@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { UserRole } from "@/lib/constants/roles";
 import connectDB from "@/lib/db";
 import { UserModel } from "@/lib/models";
@@ -5,6 +6,13 @@ import { IUserDocument } from "@/lib/models/User.model";
 import { ApiError } from "@/lib/api-response";
 import { getAccessTokenFromCookies } from "@/lib/auth/cookies";
 import { verifyAccessToken } from "@/lib/auth/tokens";
+
+async function getAccessTokenFromBearerHeader(): Promise<string | undefined> {
+  const headerStore = await headers();
+  const authorization = headerStore.get("authorization");
+  if (!authorization?.startsWith("Bearer ")) return undefined;
+  return authorization.slice("Bearer ".length).trim();
+}
 
 export function toSafeUser(user: IUserDocument): Record<string, unknown> {
   const obj = user.toObject() as Record<string, unknown>;
@@ -15,7 +23,9 @@ export function toSafeUser(user: IUserDocument): Record<string, unknown> {
 
 export async function getCurrentUser(): Promise<IUserDocument | null> {
   try {
-    const token = await getAccessTokenFromCookies();
+    const token =
+      (await getAccessTokenFromBearerHeader()) ??
+      (await getAccessTokenFromCookies());
     if (!token) return null;
 
     const decoded = verifyAccessToken(token);

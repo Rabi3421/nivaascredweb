@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { UserModel } from "@/lib/models";
 import {
@@ -20,9 +20,25 @@ import {
   handleRouteError,
 } from "@/lib/api-response";
 
-export async function POST() {
+function isMobileClient(req: NextRequest): boolean {
+  return req.headers.get("x-client-type") === "mobile";
+}
+
+async function getMobileRefreshToken(req: NextRequest): Promise<string | undefined> {
   try {
-    const refreshToken = await getRefreshTokenFromCookies();
+    const body = (await req.json()) as { refreshToken?: string };
+    return body.refreshToken;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const mobileClient = isMobileClient(req);
+    const refreshToken = mobileClient
+      ? await getMobileRefreshToken(req)
+      : await getRefreshTokenFromCookies();
     if (!refreshToken) throw new ApiError("No refresh token", 401);
 
     const decoded = verifyRefreshToken(refreshToken);
@@ -52,7 +68,9 @@ export async function POST() {
         { success: false, message: "Invalid session, please log in again" },
         { status: 401 }
       );
-      clearAuthCookies(clearResponse);
+      if (!mobileClient) {
+        clearAuthCookies(clearResponse);
+      }
       return clearResponse;
     }
 
@@ -70,9 +88,14 @@ export async function POST() {
 
     const response = successResponse("Token refreshed", {
       user: toSafeUser(user),
+      ...(mobileClient
+        ? { accessToken: newAccessToken, refreshToken: newRefreshToken }
+        : {}),
     });
 
-    setAuthCookies(response as NextResponse, newAccessToken, newRefreshToken);
+    if (!mobileClient) {
+      setAuthCookies(response as NextResponse, newAccessToken, newRefreshToken);
+    }
     return response;
   } catch (error) {
     return handleRouteError(error, "POST /api/auth/refresh-token");
